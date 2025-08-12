@@ -10,10 +10,10 @@ class BoardComm():
         Generic Method for board communication
     """
 
-    def __init__(self):
+    def __init__(self, hardware: str):
 
         # initialization code here
-        pass
+        self.hardware = hardware
 
     def rx_thread(self) -> None:
         """
@@ -65,6 +65,7 @@ class BoardComm():
         """
 
         # send message here
+        print(msg)
 
         return True
 
@@ -78,4 +79,4 @@ class BoardComm():
 
         # read data here
 
-        return True
+        return "OK"

@@ -2,17 +2,12 @@
 conftest.py
 """
 
-import time
-import datetime
 import logging
 import pytest
-from _pytest.fixtures import FixtureRequest
 from _pytest.nodes import Item
-from _pytest.reports import TestReport
-from _pytest.config.argparsing import Parser
 from common_libs.board_comm import BoardComm
 
-logger = logging.getlogger(__name__)
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session", autouse=True)
 def hardware_comm():
@@ -22,17 +17,22 @@ def hardware_comm():
     logger.info("Starting communication session...")
 
     # get available hardware
+    def get_hardware():
+        # dummy function
+        return ["hello", "world"]
+
     available_hardware = get_hardware()
 
-    comm_obj = []
+    comm_list = []
     for hardware in available_hardware:
-        comm_obj = BoardComm()
+        comm_obj = BoardComm(hardware)
         comm_obj.connect()
+        comm_list.append(comm_obj)
 
-    yield comm_obj
+    yield comm_list
 
     logger.info("Closing communication session...")
-    for hardware in comm_obj:
+    for hardware in comm_list:
         hardware.terminate_communication()
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -46,8 +46,8 @@ def pytest_runtest_makereport(item: Item):
                         determine board to grab logs from
     """
 
-    outcome: TestReport = yield
-    result: TestReport = outcome.get_result()
+    outcome = yield
+    result = outcome.get_result()
     if result.when == "call" and result.failed:
 
         # collect logs and so on

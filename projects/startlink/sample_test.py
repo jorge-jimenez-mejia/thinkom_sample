@@ -1,9 +1,13 @@
 
 import pytest
 from common_libs.board_comm import BoardComm
-from common_libs.custom_exceptions import TestFailure
+from common_libs.custom_exceptions import FailTest
 
-def sample_test(hardware_comm: list[BoardComm]):
+
+def pass_test(hardware_comm: list[BoardComm]):
+    """
+    TEST INFO HERE
+    """
 
     result: bool = True
 
@@ -11,10 +15,10 @@ def sample_test(hardware_comm: list[BoardComm]):
         for comm in hardware_comm:
             comm.send("hello world")
             response = comm.read()
-            if response != "OK":
-                raise TestFailure(f"message did not respond with OK: {response}")
+            if response == "OK":
+                raise FailTest(f"message did not respond with OK: {response}")
 
-    except TestFailure:
+    except FailTest:
         result = False
     finally:
         # any test tear down
